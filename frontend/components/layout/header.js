@@ -18,11 +18,11 @@ export const Header = () => {
                     <Link href="/" as='/' passHref >
                         <TitleLink>
                             <Title>
-                                Dale Salter
+                                {"D&H"}
                             </Title>
                         </TitleLink>
                     </Link>
-                    <h6 className="mb-2 text-muted">Serverless, Software Engineering, Leadership, DevOps</h6>          
+                    <h6 className="mb-2 text-muted">All our best times all in one place</h6>          
                 </Col>
             </Row>
         </SpacedContainer>

@@ -36,7 +36,7 @@ const Editor = () => {
   return (
     <div>
       <Head>
-        <title>Dale Salter</title>
+        <title>{"D&H"}</title>
         <link rel="icon" href="https://blog-production-image-bucket.s3-accelerate.amazonaws.com/logo-4.png" />
       </Head>
 

@@ -41,13 +41,13 @@ const App = ({ Component, pageProps }) => {
               type: 'website',
               locale: 'en_IE',
               url: 'https://dalejsalter.com/',
-              site_name: 'Dale Salter',
+              site_name: 'D&H',
               images: [
                 {
                   url: 'blog-production-image-bucket.s3-accelerate.amazonaws.com/logo-4.png',
                   width: 512,
                   height: 512,
-                  alt: 'Dale Salter Site Logo',
+                  alt: 'D&H Site Logo',
                 },
               ]
             }}
