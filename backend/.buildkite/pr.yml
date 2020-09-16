@@ -5,14 +5,14 @@
     env:
       AWS_REGION: "us-east-1"
       AWS_DEFAULT_REGION: "us-east-1"      
-      AWS_ACCOUNT_ID: "287400154669"
+      AWS_ACCOUNT_ID: "027610500199"
       BUILDKITE_BUILD_NUMBER: ${BUILDKITE_BUILD_NUMBER}
-      ROLE_ARN: "arn:aws:iam::287400154669:role/buildkite"
+      ROLE_ARN: "arn:aws:iam::027610500199:role/buildkite"
       STAGE: "test"
     command: "./bin/ci-test -s test"
     plugins:
       - cultureamp/aws-assume-role#v0.1.0:
-          role: "arn:aws:iam::287400154669:role/buildkite"
+          role: "arn:aws:iam::027610500199:role/buildkite"
       - docker-compose#v3.1.0:
           run: backend
           env:

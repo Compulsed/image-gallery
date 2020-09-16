@@ -8,8 +8,8 @@ steps:
       env:
         AWS_REGION: "us-east-1"
         AWS_DEFAULT_REGION: "us-east-1"
-        AWS_ACCOUNT_ID: "088746931051"
-        ROLE_ARN: arn:aws:iam::088746931051:role/buildkite
+        AWS_ACCOUNT_ID: "027610500199"
+        ROLE_ARN: arn:aws:iam::027610500199:role/buildkite
         STAGE: "staging"
   - label: "Production"
     trigger: "image-gallery-deploy"
@@ -20,6 +20,6 @@ steps:
       env:
         AWS_REGION: "us-east-1"
         AWS_DEFAULT_REGION: "us-east-1"
-        AWS_ACCOUNT_ID: "926179289874"
-        ROLE_ARN: arn:aws:iam::926179289874:role/buildkite
+        AWS_ACCOUNT_ID: "027610500199"
+        ROLE_ARN: arn:aws:iam::027610500199:role/buildkite
         STAGE: "production"
