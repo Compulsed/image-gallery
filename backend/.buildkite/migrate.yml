@@ -1,0 +1,36 @@
+steps:
+  - block: "Run command"
+    prompt: "Please select the account and enter the command you wish to execute"
+    fields:
+      - select: "Select Role"
+        key: role
+        required: true
+        options:
+          - label: "Staging"
+            value: "arn:aws:iam::088746931051:role/buildkite"
+          - label: "Production"
+            value: "arn:aws:iam::926179289874:role/buildkite"
+      - select: "Select Stage"
+        key: stage
+        required: true
+        options:
+          - label: "Staging"
+            value: "staging"
+          - label: "Production"
+            value: "production"
+  - label: "Running script"
+    command: "./bin/migrate"
+    plugins:
+      - acloudguru/metadata-env:
+          keys:
+            - role=AWS_ASSUME_ROLE_ARN
+            - stage=STAGE
+      - acloudguru/aws-assume-role:
+      - docker-compose#v2.0.0:
+          run: backend
+          env:
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
+            - AWS_REGION=us-east-1
+            - AWS_DEFAULT_REGION=us-east-1

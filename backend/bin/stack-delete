@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+STAGE=""
+
+usage="USAGE: $(basename "$0") [-s|--stage] <stage>
+where:
+    -s | --stage        stage for deployment (required)
+    -h | --help         show this help text"
+
+while [ $# -gt 0 ]; do
+    if [[ $1 =~ "--"* ]]; then
+        case $1 in
+            --help|-h) echo "$usage"; exit; ;;
+            --stage|-s) STAGE=$2;;
+        esac
+    fi
+    shift
+done
+
+set +u # AWS_PROFILE is not going to be set on CI, command will not fail
+if [[ $AWS_PROFILE && ($AWS_PROFILE != *$STAGE*) ]]; then
+    echo "ERROR: You have likely mistakenly used the wrong STAGE ($STAGE) for this AWS_PROFILE ($AWS_PROFILE)";
+    echo " To avoid incorrect stage deployments include the STAGE name within your AWS_PROFILE name."
+    exit 1;
+fi
+set -u
+
+echo "Removing serverless deployment for stage: $STAGE"
+./node_modules/.bin/sls remove --stage "$STAGE" --region "$AWS_REGION" --verbose --aws-s3-accelerate

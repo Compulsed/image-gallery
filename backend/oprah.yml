@@ -1,0 +1,16 @@
+service: image-gallery
+provider:
+  name: ssm
+
+config:
+  path: /${stage}/image-gallery/config
+
+  production:
+    AURORA_AUTO_PAUSE: "true"
+
+  defaults:
+    AURORA_AUTO_PAUSE: "true"
+    DATABASE_NAME: "image-gallery"
+
+  required:
+    FRONTEND_AUTH_SECRET: "Any string which you should enter in the /login/x to auth with backend"

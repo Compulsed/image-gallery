@@ -1,0 +1,88 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Knex",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "--inspect-brk=9229",
+                "--nolazy",
+                "./node_modules/.bin/knex",
+                "migrate:latest",
+                "--env",
+                "dev"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/handler.js"
+            ],
+            "port": 9229,
+            "sourceMaps": true,
+            "args": [],
+            "env": {
+                "AWS_REGION": "us-east-1",
+                "AWS_PROFILE": "image-gallery-dev",
+                "AWS_SDK_LOAD_CONFIG": "1",
+                "STAGE": "dev"
+            }
+        },    
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Serverless",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "--inspect",
+                "./node_modules/.bin/serverless",
+                "offline",
+                "-s",
+                "dev",
+                "-P",
+                "4000"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/handler.js"
+            ],
+            "port": 9229,
+            "sourceMaps": true,
+            "args": [],
+            "envFile": "${workspaceFolder}/.env.dev"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Function",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "--inspect",
+                "./node_modules/.bin/serverless",
+                "invoke",
+                "local",
+                "-f",
+                "pipelines",
+                "--data",
+                "{}",
+                "-s",
+                "dev"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/handler.js"
+            ],
+            "port": 9229,
+            "sourceMaps": true,
+            "args": [],
+            "env": {
+                "AWS_REGION": "us-east-1",
+                "AWS_PROFILE": "image-gallery-dev",
+                "AWS_SDK_LOAD_CONFIG": "1",
+                "AWS_ACCOUNT_ID": "583855972723",
+                "STAGE": "dev"
+            }            
+        }
+    ]
+}
