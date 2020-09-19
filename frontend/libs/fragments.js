@@ -13,5 +13,8 @@ export const POST_FRAGMENT = gql`
         updatedAt
         publishStatus
         availableWithLink
+        images {
+            imageUrl
+        }
     }
 `;

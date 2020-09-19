@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { withRouter } from 'next/router'
 import autosize from 'autosize';
 import { useDebouncedCallback } from 'use-debounce';
+import _ from 'lodash';
 
 import { useDropzone } from 'react-dropzone'
 import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client';
@@ -181,6 +182,8 @@ const PostForm = ({ post }) => {
     const [setAvailableWithLink, { data: setAvailableWithLinkData, loading: setAvailableWithLinkLoading }] = useMutation(SET_AVAILABLE_WITH_LINK);
     const [removeAvailableWithLink, { data: removeAvailableWithLinkData, loading: removeAvailableWithLinkLoading }] = useMutation(REMOVE_AVAILABLE_WITH_LINK);
 
+    const [customImages, setCustomImages] = useState(post.images);
+
     const [debouncedUpdatePost] = useDebouncedCallback(updatePost, 5000);
 
     const loading = (
@@ -204,7 +207,19 @@ const PostForm = ({ post }) => {
           imageUrl: form.elements.imageUrl.value,
           shortDescription: form.elements.shortDescription.value,
           longDescription: form.elements.longDescription.value,
-          body: form.elements.body.value
+          body: form.elements.body.value,
+          images: _.filter([
+            { imageUrl: _.get(form, 'elements.imageUrl-0.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-1.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-2.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-3.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-4.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-5.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-6.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-7.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-8.value') },
+            { imageUrl: _.get(form, 'elements.imageUrl-9.value') },
+          ], 'imageUrl')
       };
 
       const secret = localStorage.getItem('_password');
@@ -226,6 +241,7 @@ const PostForm = ({ post }) => {
           if (confirm('Are you sure you want to publish this post?')) {
              publishPost({ variables: { postId: post.postId, secret } });
           }
+          return;
         }
         case 'HIDE': {
           if (confirm('Are you sure you want to hide this post?')) {
@@ -239,20 +255,6 @@ const PostForm = ({ post }) => {
             unhidePost({ variables: { postId: post.postId, secret } });
           }
           return;
-        }
-        default: console.log('Unsupported publish action');
-      }
-    }
-
-    const handleLinkAvailability = (action) => {
-      const secret = localStorage.getItem('_password');
-
-      switch (action) {
-        case 'SET': {
-          return setAvailableWithLink({ variables: { postId: post.postId, secret } });
-        }
-        case 'REMOVE': {
-          return removeAvailableWithLink({ variables: { postId: post.postId, secret } });
         }
         default: console.log('Unsupported publish action');
       }
@@ -274,22 +276,6 @@ const PostForm = ({ post }) => {
             </Col>
 
             <Col sm={6}>
-              { (post.publishStatus !== 'PUBLISHED' && post.availableWithLink === false) &&
-                <Button className="ml-2" style={{ float: 'right' }} variant="light" onClick={() => handleLinkAvailability('SET')}>
-                { !loading
-                    ? "Allow Public Link"
-                    : <Spinner size="sm" animation="border" variant="dark" />}
-                </Button>
-              }
-
-              { (post.publishStatus !== 'PUBLISHED' && post.availableWithLink === true) &&
-                <Button className="ml-2" style={{ float: 'right' }} variant="light" onClick={() => handleLinkAvailability('REMOVE')}>
-                { !loading
-                    ? "Delete Public Link"
-                    : <Spinner size="sm" animation="border" variant="dark" />}
-                </Button>
-              }
-
               { post.publishStatus === 'PUBLISHED' &&
                 <Button className="ml-2" style={{ float: 'right' }} variant="light" onClick={() => handlePostVisibilityOption('HIDE')}>
                 { !loading
@@ -323,9 +309,32 @@ const PostForm = ({ post }) => {
               </Form.Group>           
 
               <Form.Group controlId="imageUrl">
-                  <Form.Label>Image URL</Form.Label>
+                  <Form.Label>Cover Images</Form.Label>
                   <Form.Control type="text"  defaultValue={post.imageUrl} />
               </Form.Group>
+
+              <div className="mt-5 mb-5" style={{ border: '1px solid #e3e3e3', padding: '20px' }}>
+                { customImages.map(({ imageUrl }, index) => (
+                  <Form.Group controlId={`imageUrl-${index}`} key={imageUrl}>
+                    <Form.Label>{`Image for the day #${index + 1}`}</Form.Label>
+                    <Row>
+                      <Col xs={11}>
+                        <Form.Control type="text" defaultValue={imageUrl} />
+                      </Col>
+                      <Col>
+                        <Button variant="light" onClick={() => {
+                            setCustomImages([...customImages.slice(0, index), ...customImages.slice(index + 1)])
+                          }}>
+                          ❌
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form.Group>
+                ))}
+                <Button className="ml-2"  variant="light" onClick={() => { setCustomImages([ ...customImages, { imageUrl: '' }]) }}>
+                  Add New Image
+                </Button>
+              </div>
 
               <Form.Group controlId="shortDescription">
                   <Form.Label>Short Description</Form.Label>
@@ -339,7 +348,7 @@ const PostForm = ({ post }) => {
 
               <Form.Group controlId="body">
                   <Form.Label>Body</Form.Label>
-                  <Form.Control as="textarea" rows="50" defaultValue={post.body} />
+                  <Form.Control as="textarea" rows="5" defaultValue={post.body} />
               </Form.Group>                
 
               <div>

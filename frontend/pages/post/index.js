@@ -1,22 +1,20 @@
 import Head from 'next/head';
 import { gql, useQuery } from '@apollo/client';
-import dynamic from 'next/dynamic'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
 
-import { Container, Badge, Row, Col, Button } from 'react-bootstrap';
+import { Container, Badge, Row, Col  } from 'react-bootstrap';
 import Calendar from 'react-calendar';
 import styled from 'styled-components'
 import lodash from 'lodash';
 import { DateTime } from 'luxon';
+import { useRouter } from 'next/router'
 
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { CenterSpinner } from '../../components/spinner';
 
 const GET_POSTS = gql`
-  query($secret: String!) {
-    editorPosts(secret: $secret) {
+  query {
+    posts {
       id
       postId
       title
@@ -57,29 +55,12 @@ const getMonthByPostId = date =>
 const getYearByPostId = date =>
   DateTime.fromJSDate(new Date(date)).toFormat('y')
 
-
-const PublishBadge = ({ post }) => {
-  switch (post.publishStatus) {
-    case 'DRAFT':
-      return <Badge variant="light">DRAFT</Badge>
-    case 'HIDDEN': 
-      return <Badge variant="dark">HIDDEN</Badge>
-    case 'PUBLISHED': 
-      return <Badge variant="primary">PUBLISHED</Badge>
-  }
-
-  return null;
-}
-
-const Editor = () => {
+export default function Home() {
   const router = useRouter();
 
-  const { loading, error, data } = useQuery(
-      GET_POSTS,
-      { variables: { secret: localStorage.getItem('_password') } }
-  );
+  const { loading, error, data } = useQuery(GET_POSTS);
 
-  const postsByDate = lodash.groupBy(data && data.editorPosts, 'postId');
+  const postsByDate = lodash.groupBy(data && data.posts, 'postId');
   
   const postsByMonth = lodash.groupBy(
     data && data.editorPosts,
@@ -102,27 +83,17 @@ const Editor = () => {
         <Header />
 
         <Container>
-          <Row>
-            <Col style={{ padding: 10 }}>
-              <h1 style={{ display: 'inline-block'}}>Memory Creator</h1>
-            </Col>
-          </Row>   
-
-
             {loading && <CenterSpinner animation="grow" />}
-            { !loading &&
-              <StyledCalendar
-                onChange={(date) => {
-                  if (postsByDate[getDateByPostId(date)]) {
-                    router.push({
-                      pathname: `/admin/post/${getDateByPostId(date)}`,
-                    })
-                  } else {
-                    router.push({
-                      pathname: `/admin/post/${getDateByPostId(date)}/create`,
-                    })
+            {
+              !loading && <StyledCalendar
+                onChange={(date, event) => {
+                    if (postsByDate[getDateByPostId(date)]) {
+                      router.push({
+                        pathname: `/post/${getDateByPostId(date)}`,
+                      })
+                    } 
                   }
-                }}
+                }
                 value={new Date()}
                 // tileDisabled
                 tileClassName={({ activeStartDate, date, view }) => view === 'month' && date.getDay() === 6 ? 'saturday' : null}
@@ -140,8 +111,10 @@ const Editor = () => {
                     }
                     case 'month': {
                       return postInDate && (<> 
-                          <PublishBadge post={postInDate[0]} />
-                          <p style={{ fontSize: '12px' }}>{ postInDate[0].title.slice(0, 15) }</p>
+                          <div style={{ padding: '5px' }}>
+                            <img src={postInDate[0].imageUrl} style={{ width: '30px' }}></img>
+                          </div>
+                          <p style={{ fontWeight: '600', fontSize: '14px' }}>{ postInDate[0].title.slice(0, 15) }</p>
                         </>)
                     }
                     default:
@@ -150,7 +123,6 @@ const Editor = () => {
                 }}
               />
             }
-          
         </Container>
 
         <Footer />
@@ -158,7 +130,3 @@ const Editor = () => {
     </div>
   )
 }
-
-export default dynamic(() => Promise.resolve(Editor), {
-    ssr: false
-});

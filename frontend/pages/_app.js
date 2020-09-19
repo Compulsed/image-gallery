@@ -6,9 +6,8 @@ import { DefaultSeo } from 'next-seo';
 import { ThemeProvider } from 'styled-components'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/styles.css'
-
-import * as gtag from '../libs/gtag'
-
+import 'react-calendar/dist/Calendar.css';
+import '@brainhubeu/react-carousel/lib/style.css';
 
 const theme = {
   colors: {
@@ -20,9 +19,7 @@ import { withApollo } from '../libs/with-apollo';
 
 const App = ({ Component, pageProps }) => {
   useEffect(() => {
-    const handleRouteChange = (url) => {
-      gtag.pageview(url)
-    }
+    const handleRouteChange = (url) => {}
     Router.events.on('routeChangeComplete', handleRouteChange)
     return () => {
       Router.events.off('routeChangeComplete', handleRouteChange)

@@ -7,13 +7,13 @@ export const Header = () => {
     return (
         <SpacedContainer>
             <Row>
-                <Col style={{flex: '0 0 50px', padding: 0 }} >
+                {/* <Col style={{flex: '0 0 50px', padding: 0 }} >
                     <Link href="/" as='/' passHref >
                         <a>
                             <img style={{ width: '100%' }} src="https://blog-production-image-bucket.s3-accelerate.amazonaws.com/logo-4.png" />
                         </a>
                     </Link>
-                </Col>
+                </Col> */}
                 <Col>
                     <Link href="/" as='/' passHref >
                         <TitleLink>
@@ -22,7 +22,7 @@ export const Header = () => {
                             </Title>
                         </TitleLink>
                     </Link>
-                    <h6 className="mb-2 text-muted">All our best times all in one place</h6>          
+                    <h6 className="mb-2 text-muted">All our best memories all in one place</h6>          
                 </Col>
             </Row>
         </SpacedContainer>

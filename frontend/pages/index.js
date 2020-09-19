@@ -1,32 +1,15 @@
 import Head from 'next/head';
 import { gql, useQuery } from '@apollo/client';
+import Link from 'next/link'
 
-import { Container, Row, Col  } from 'react-bootstrap';
+import { Container, Badge, Row, Col  } from 'react-bootstrap';
+import { useRouter } from 'next/router'
 
 import { Header } from '../components/layout/header';
 import { Footer } from '../components/layout/footer';
-import { PostCard } from '../components/card';
-import { CenterSpinner } from '../components/spinner';
-
-const GET_POSTS = gql`
-  query {
-    posts {
-      id
-      postId
-      title
-      shortDescription
-      longDescription
-      imageUrl
-      body
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
 
 export default function Home() {
-  const { loading, error, data } = useQuery(GET_POSTS);
+  const router = useRouter();
 
   return (
     <div>
@@ -38,19 +21,17 @@ export default function Home() {
       <main>
         <Header />
 
-        <Container>
-            {loading && <CenterSpinner animation="grow" />}
+        <div style={{  display: 'flex', minHeight: '80vh', alignItems: 'center', justifyContent: 'center' }}>
+          <Link href="/post" as='/post'>
+            <div style={{ width: '600px', border: '1px solid #e3e3e3', padding: '20px' }}>
+              <h1 style={{ fontSize: '72px' }} className="mb-5">Happy 3 months 🎉</h1>
+              <p style={{ fontSize: '24px' }}> Today is the day I want to finally spend with you building out our website together, putting all the amazing pictures that we have taken together all in the one place</p>
 
-            { (data && data.posts || []).map(post => {
-              return (
-                <Row key={post.postId}>
-                  <Col style={{ padding: 10 }}>
-                    <PostCard post={post} highlightHover={true}/>
-                  </Col>
-                </Row>
-              );
-          })}
-        </Container>
+              
+                <p>Click this card and lets go! </p>
+            </div>
+          </Link>
+        </div>
 
         <Footer />
       </main>

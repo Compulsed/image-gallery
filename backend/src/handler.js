@@ -7,6 +7,10 @@ const { v4: uuidv4 } = require('uuid');
 const s3 = new AWS.S3();
 
 const typeDefs = gql`
+    type Images {
+        imageUrl: String
+    }
+
     type Post {
         id: ID!
         postId: String
@@ -19,6 +23,7 @@ const typeDefs = gql`
         updatedAt: String
         publishStatus: String
         availableWithLink: Boolean
+        images: [Images]
     }   
 
     type Query {
@@ -33,6 +38,10 @@ const typeDefs = gql`
         editorSignedUrl(fileName: String!, secret: String!, contentType: String!): String
     }
     
+    input ImagesInput {
+        imageUrl: String
+    }
+
     input PostInput {
         postId: String!
         title: String
@@ -40,6 +49,7 @@ const typeDefs = gql`
         shortDescription: String
         longDescription: String
         imageUrl: String
+        images: [ImagesInput]
     }
 
     type UpdatePostResponse {
@@ -65,6 +75,7 @@ const resolvers = {
         id: ({ postId }) => postId,
         createdAt: ({ createdAt }) => createdAt && createdAt.replace(' ', 'T') + 'Z', // Convert to ISO string form postgres
         updatedAt: ({ updatedAt }) => updatedAt && updatedAt.replace(' ', 'T') + 'Z', // Convert to ISO string form postgres
+        images: ({ images }) => JSON.parse(images)
     },
 
     Query: {
@@ -75,7 +86,7 @@ const resolvers = {
                 FROM
                     "post"
                 WHERE
-                    "postId" = :postId::uuid AND ("publishStatus" = 'PUBLISHED' OR "availableWithLink" = true)`,
+                    "postId" = :postId::text AND ("publishStatus" = 'PUBLISHED' OR "availableWithLink" = true)`,
                 { postId }
             );
 
@@ -93,7 +104,7 @@ const resolvers = {
                 FROM
                     "post"
                 WHERE
-                    "postId" = :postId::uuid`,
+                    "postId" = :postId::text`,
                 { postId }
             );
 
@@ -158,7 +169,7 @@ const resolvers = {
             if (!postId) return null;
 
             const result = await queryNoCache(
-                `SELECT * FROM "post" WHERE "postId" = :postId::uuid`,
+                `SELECT * FROM "post" WHERE "postId" = :postId::text`,
                 { postId }
             );
 
@@ -200,7 +211,7 @@ const resolvers = {
                         "publishStatus"
                     )
                     VALUES(
-                        :postId::uuid,
+                        :postId::text,
                         :title::text,
                         :body::text,
                         :shortDescription::text,
@@ -241,6 +252,7 @@ const resolvers = {
                 longDescription: args.postInput.longDescription || null,
                 imageUrl: args.postInput.imageUrl || null,
                 updatedAt: new Date().toISOString(),
+                images: JSON.stringify(args.postInput.images || [])
             }
 
             try {
@@ -253,9 +265,10 @@ const resolvers = {
                         "shortDescription"  = :shortDescription::text,
                         "longDescription"   = :longDescription::text,
                         "imageUrl"          = :imageUrl::text,
-                        "updatedAt"         = :updatedAt::timestamp
+                        "updatedAt"         = :updatedAt::timestamp,
+                        "images"            = :images::jsonb
                     WHERE
-                        "postId" = :postId::uuid;
+                        "postId" = :postId::text;
                     `,
                     [ post ]
                 );
@@ -290,7 +303,7 @@ const resolvers = {
                         "createdAt"         = :createdAt::timestamp,
                         "updatedAt"         = null
                     WHERE
-                        "postId" = :postId::uuid AND 'DRAFT';
+                        "postId" = :postId::text AND "publishStatus" = 'DRAFT';
                     `,
                     [ { postId, createdAt: new Date().toISOString() } ]
                 );
@@ -323,7 +336,7 @@ const resolvers = {
                     SET 
                         "publishStatus" = 'HIDDEN'
                     WHERE
-                        "postId" = :postId::uuid AND "publishStatus" = 'PUBLISHED';
+                        "postId" = :postId::text AND "publishStatus" = 'PUBLISHED';
                     `,
                     [ { postId } ]
                 );
@@ -356,7 +369,7 @@ const resolvers = {
                     SET 
                         "publishStatus" = 'PUBLISHED'
                     WHERE
-                        "postId" = :postId::uuid AND "publishStatus" = 'HIDDEN';
+                        "postId" = :postId::text AND "publishStatus" = 'HIDDEN';
                     `,
                     [ { postId } ]
                 );
@@ -390,7 +403,7 @@ const resolvers = {
                     SET 
                         "availableWithLink" = true
                     WHERE
-                        "postId" = :postId::uuid;
+                        "postId" = :postId::text;
                     `,
                     [ { postId } ]
                 );
@@ -424,7 +437,7 @@ const resolvers = {
                     SET 
                         "availableWithLink" = false
                     WHERE
-                        "postId" = :postId::uuid;
+                        "postId" = :postId::text;
                     `,
                     [ { postId } ]
                 );

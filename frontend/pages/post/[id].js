@@ -2,16 +2,16 @@ import Head from 'next/head';
 
 import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'next/router'
-import Disqus from "disqus-react"
+import dynamic from 'next/dynamic'
+import { useState } from 'react';
 
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Carousel } from 'react-bootstrap';
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
-import { PostCard } from '../../components/card';
 import { CenterSpinner } from '../../components/spinner';
 import { BlogMarkdown } from '../../components/blog-markdown';
 
-const GET_POSTS = gql`
+const GET_POST = gql`
   query($postId: String!) {
     post(postId: $postId) {
       id
@@ -23,32 +23,39 @@ const GET_POSTS = gql`
       body
       createdAt
       updatedAt
+      images {
+        imageUrl
+      }
     }
   }
 `;
 
-const DisqusComponent = ({ post }) => {
-  const disqusShortname = 'dalejsalter';
+const MyCarousel = ({ post }) => {
+  const [index, setIndex] = useState(0);
 
-  const disqusConfig = {
-    url: `https://dalejsalter.com/post/${post.postId}`,
-    identifier: post.postId,
-    title: post.title
-  }
+  const handleSelect = (selectedIndex, e) => {
+    setIndex(selectedIndex);
+  };
 
   return (
-    <Disqus.DiscussionEmbed
-      shortname={disqusShortname}
-      config={disqusConfig}
-    />
-  )
-}
-
+    <Carousel activeIndex={index} onSelect={handleSelect}>
+      {post.images.map(({ imageUrl }) => (
+        <Carousel.Item key={imageUrl}>
+          <img
+            className="d-block w-100"
+            src={imageUrl}
+            alt="First slide"
+          />
+        </Carousel.Item>
+      ))}
+    </Carousel>
+  );
+} 
 
 function Post({ router }) {
   const { loading, error, data } = useQuery(
-    GET_POSTS,
-    { variables: { postId: router.query.id } }
+    GET_POST,
+    { variables: { postId:  router.query.id } } // '2020-09-01' } }//  router.query.id } }
   );
 
   const post = data && data.post;
@@ -68,21 +75,16 @@ function Post({ router }) {
 
           {!loading && post && (
             <div>
-              <Row key={post.postId}>
-                <Col style={{ padding: 10 }}>
-                  <PostCard post={post} highlightHover={false}/>
+              <Row>
+                <Col>
+                  <MyCarousel post={post}></MyCarousel>
                 </Col>
-              </Row>              
+              </Row>
               <Row>
                 <Col style={{ padding: 10 }}>
                   <BlogMarkdown escapeHtml={false} source={post.body} />
                 </Col>
-              </Row>
-              <Row>
-              <Col style={{ padding: 10 }}>
-                <DisqusComponent post={post} />
-              </Col>                
-              </Row>              
+              </Row>            
             </div>
           )}
         </Container>
@@ -93,4 +95,6 @@ function Post({ router }) {
   )
 }
 
-export default withRouter(Post);
+export default dynamic(() => Promise.resolve(withRouter(Post)), {
+  ssr: false
+});

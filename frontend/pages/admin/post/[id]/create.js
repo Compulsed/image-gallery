@@ -1,13 +1,15 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import dynamic from 'next/dynamic'
+import { withRouter } from 'next/router'
 import { gql, useMutation } from '@apollo/client';
-import { v4 as uuidv4 } from 'uuid';
+import { DateTime } from 'luxon';
+import Link from 'next/link'
 
-import { Button, Form, Container, Spinner } from 'react-bootstrap';
+import { Button, Row, Col, Form, Container, Spinner } from 'react-bootstrap';
 
-import { Header } from '../../../components/layout/header';
-import { Footer } from '../../../components/layout/footer';
+import { Header } from '../../../../components/layout/header';
+import { Footer } from '../../../../components/layout/footer';
 
 const CREATE_POST = gql`
     mutation ($postInput: PostInput!, $secret: String!) {
@@ -30,56 +32,21 @@ const CREATE_POST = gql`
 `;
 
 const defaultBodyString = `\
-# Sub Lenaee
+# Information about this day
 
-## Flumina temptantes semianimes esse corpore
-
-Lorem markdownum movet se somni. [Hunc](http://factaexpalluit.org/ventos.html)
-sacris, at ignara ausus! Silvani modo est, tinnitibus tempore meque. Greges est,
-et arma regnum mortale, et suis, huic carmina arva. Servantis facere.
-
-Iunonis Peneos. Ille deam harundine orbis. Mors cauda sed idque socero ungues
-femur moderantur [meque](http://bovis-opem.net/vivebat): illi loca adhuc, iam?
-
-\`\`\`
-var of = portalRootkitWindows.baudDocking(kvmAd, pptp_frame);
-var chipsetPack = multimedia(e_ebook - 20 - androidSnippet.circuitTftp(3));
-ccCard.token_p = digital;
-soap_gigabyte = text_memory.user(pipeline_icf, web.heat_rj(5 *
-        systray_toggle), sata_flops_boot + character);
-\`\`\`
-
-
-![alt text](https://blog-production-image-bucket.s3-accelerate.amazonaws.com/logo-4.png "Logo Title From DB Text 1")
-
-Ebrius ostia non, nato [non durat](http://www.aiacem.net/tulisset) poenas
-tumebat cultum meritum homines premunt. Ardet hederis, viro, alas saepius,
-Priamus duratur. Quia sic choreas, suos: ceperunt vaticinor hoc et illi
-accipiunt. Tota resto amatas, secundo at cera qua humilem; quam [muneris
-fontis](http://mihi.io/) pessima generis umbras; Aeacus, perdere.
-
-## Frontis numina
-
-Capto **divulsere vertice pastor** numina Troiae Theseu Iuno et meo ergo
-crescere tamen, hostiliter in guttura. Accipe mittunt piasque pectora; aevi
-Phoebe Palaemona videoque anum **sua quoque**.
-
-1. Ille praedae aristas iura
-2. Parte tamen
-3. Et atra Euagrus mitibus habenti Memnonides gravitate
-4. Habuit talibus venientem enim
+Insert something special about this day
 `;
 
 
 const defaultFormValues = {
-    title: 'Title From Form',
+    title: 'Title to discribe the day',
     imageUrl: 'https://blog-production-image-bucket.s3-accelerate.amazonaws.com/cf720254-751d-432c-bb75-5928594c7bbb-D2099DD1-EEB3-4A55-8D2C-896254DA249C.png',
-    shortDescription: 'Lorem Ipsum is simply dummy text of the printing',
-    longDescription: 'Lorem Ipsum is simply dummy text of the printing Lorem Ipsum is simply dummy text of the printing',
+    shortDescription: 'A short summary of the day',
+    longDescription: 'A longer summary of the day',
     body: defaultBodyString
 }
 
-const PostForm = () => {
+const PostForm = ({ postId }) => {
     const router = useRouter();
     const [createPost, { data, loading }] = useMutation(CREATE_POST);
 
@@ -95,7 +62,7 @@ const PostForm = () => {
         const form = event.currentTarget;
 
         const postInput = {
-            postId: uuidv4(),
+            postId,
             title: form.elements.title.value,
             imageUrl: form.elements.imageUrl.value,
             shortDescription: form.elements.shortDescription.value,
@@ -154,7 +121,9 @@ const PostForm = () => {
     )
 }
 
-function Post() {
+function Post({ router }) {
+  const postId = router.query.id;
+
   return (
     <div>
       <Head>
@@ -166,9 +135,21 @@ function Post() {
         <Header />
 
         <Container>
-            <h1 className="mb-5">New Post</h1>
+            <Row>
+                <Col>
+                  <Link href="/admin" as={`/admin`} passHref >
+                    <Button className="mr-2 mt-2" variant="light">{ '<- Memories' }</Button>
+                  </Link>
+                </Col>
+              </Row>
 
-            <PostForm />
+            <Row>
+                <Col>
+                    <h1 style={{ display: 'inline-block'}} className="mb-5">New Memory on {DateTime.fromJSDate(new Date(postId)).toFormat('DD')}</h1>
+                </Col>
+            </Row>
+
+            <PostForm postId={postId} />
         </Container>
 
         <Footer />
@@ -177,6 +158,6 @@ function Post() {
   )
 }
 
-
-
-export default Post;
+export default dynamic(() => Promise.resolve(withRouter(Post)), {
+    ssr: false
+  });
