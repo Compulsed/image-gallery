@@ -39,7 +39,7 @@ const MyCarousel = ({ post }) => {
 
   return (
     <Carousel activeIndex={index} onSelect={handleSelect}>
-      {post.images.map(({ imageUrl }) => (
+      {(post.images || []).map(({ imageUrl }) => (
         <Carousel.Item key={imageUrl}>
           <img
             className="d-block w-100"

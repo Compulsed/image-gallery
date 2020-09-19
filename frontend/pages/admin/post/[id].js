@@ -4,10 +4,9 @@ import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'next/router'
 import Link from 'next/link'
 import { DateTime } from 'luxon';
-import Carousel, { Dots } from '@brainhubeu/react-carousel';
 import { useState } from 'react';
 
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, Carousel } from 'react-bootstrap';
 import { Header } from '../../../components/layout/header';
 import { Footer } from '../../../components/layout/footer';
 import { PostCard } from '../../../components/card';
@@ -35,27 +34,24 @@ const GET_POSTS = gql`
 `;
 
 const MyCarousel = ({ post }) => {
-  
-  const [value, setValue] = useState(0);
+  const [index, setIndex] = useState(0);
 
-  const onChange = value => setValue(value);
+  const handleSelect = (selectedIndex, e) => {
+    setIndex(selectedIndex);
+  };
 
   return (
-    <>
-      <Carousel plugins={['arrows']}>
-        { post.images.map(({ imageUrl }) => (
-              post.images.map(({ imageUrl }) => (<img key={imageUrl} style={{ maxHeight: '500px' }} src={imageUrl} />))
-              ))
-        }
-      </Carousel>
-      <Dots
-          value={value}
-          onChange={onChange}
-          thumbnails={
-              post.images.map(({ imageUrl }) => (<img key={imageUrl} style={{ height: '50px' }} src={imageUrl} />))
-          }
-        />
-    </>
+    <Carousel activeIndex={index} onSelect={handleSelect}>
+      {(post.images || []).map(({ imageUrl }) => (
+        <Carousel.Item key={imageUrl}>
+          <img
+            className="d-block w-100"
+            src={imageUrl}
+            alt="First slide"
+          />
+        </Carousel.Item>
+      ))}
+    </Carousel>
   );
 } 
 
@@ -70,7 +66,7 @@ function Post({ router }) {
     }
   );
 
-  const post = data && data.editorPost;
+  const post = data && data.editorPost ;
 
   return (
     <div>
