@@ -39,7 +39,7 @@ Insert something special about this day
 
 
 const defaultFormValues = {
-    title: 'Title to discribe the day',
+    title: 'Title to describe the day',
     imageUrl: 'https://blog-production-image-bucket.s3-accelerate.amazonaws.com/cf720254-751d-432c-bb75-5928594c7bbb-D2099DD1-EEB3-4A55-8D2C-896254DA249C.png',
     shortDescription: 'A short summary of the day',
     longDescription: 'A longer summary of the day',
