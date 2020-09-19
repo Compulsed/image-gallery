@@ -182,7 +182,7 @@ const PostForm = ({ post }) => {
     const [setAvailableWithLink, { data: setAvailableWithLinkData, loading: setAvailableWithLinkLoading }] = useMutation(SET_AVAILABLE_WITH_LINK);
     const [removeAvailableWithLink, { data: removeAvailableWithLinkData, loading: removeAvailableWithLinkLoading }] = useMutation(REMOVE_AVAILABLE_WITH_LINK);
 
-    const [customImages, setCustomImages] = useState(post.images);
+    const [customImages, setCustomImages] = useState(post.images || []);
 
     const [debouncedUpdatePost] = useDebouncedCallback(updatePost, 5000);
 
@@ -314,7 +314,7 @@ const PostForm = ({ post }) => {
               </Form.Group>
 
               <div className="mt-5 mb-5" style={{ border: '1px solid #e3e3e3', padding: '20px' }}>
-                { customImages.map(({ imageUrl }, index) => (
+                { (customImages || []).map(({ imageUrl }, index) => (
                   <Form.Group controlId={`imageUrl-${index}`} key={imageUrl}>
                     <Form.Label>{`Image for the day #${index + 1}`}</Form.Label>
                     <Row>
