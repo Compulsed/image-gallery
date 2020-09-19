@@ -195,6 +195,7 @@ const resolvers = {
                 imageUrl: args.postInput.imageUrl || null,
                 createdAt: new Date().toISOString(),
                 updatedAt: null,
+                images: JSON.stringify(args.postInput.images || [])
             }
 
             try {
@@ -208,7 +209,8 @@ const resolvers = {
                         "imageUrl",
                         "createdAt",
                         "updatedAt",
-                        "publishStatus"
+                        "publishStatus",
+                        "images"
                     )
                     VALUES(
                         :postId::text,
@@ -219,7 +221,8 @@ const resolvers = {
                         :imageUrl::text,
                         :createdAt::timestamp,
                         :updatedAt::timestamp,
-                        'DRAFT'
+                        'DRAFT',
+                        :images::jsonb
                     );
                     `,
                     [ post ]
