@@ -10,7 +10,8 @@ config:
 
   defaults:
     AURORA_AUTO_PAUSE: "true"
-    DATABASE_NAME: "imagegallery"
+    DATABASE_NAME: "imagegallery" # Must be alpahnumeric
+    USER_NAME: "imagegallery"     # Must be alphanumeric
 
   required:
     FRONTEND_AUTH_SECRET: "Any string which you should enter in the /login/x to auth with backend"

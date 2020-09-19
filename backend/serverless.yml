@@ -55,7 +55,7 @@ custom:
     clusterIdentifierName: ${self:provider.stackName}-aurora-cluster
     clusterDatabaseSecretName: ${self:custom.RDS.clusterIdentifierName}-secret
     databaseName: ${ssm:/${self:provider.configPath}/DATABASE_NAME }
-    databaseUser: ${self:service}
+    databaseUser: ${ssm:/${self:provider.configPath}/USER_NAME }
   GraphQL:
     path: "/graphql"
   Network:
