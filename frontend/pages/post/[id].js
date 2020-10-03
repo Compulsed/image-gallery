@@ -1,8 +1,8 @@
 import Head from 'next/head';
+import dynamic from 'next/dynamic'
 
 import { gql, useQuery } from '@apollo/client';
 import { withRouter } from 'next/router'
-import dynamic from 'next/dynamic'
 import { useState } from 'react';
 
 import { Container, Row, Col, Carousel } from 'react-bootstrap';

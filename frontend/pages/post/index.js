@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { gql, useQuery } from '@apollo/client';
+import dynamic from 'next/dynamic'
 
 import { Container, Badge, Row, Col  } from 'react-bootstrap';
 import Calendar from 'react-calendar';
@@ -55,10 +56,13 @@ const getMonthByPostId = date =>
 const getYearByPostId = date =>
   DateTime.fromJSDate(new Date(date)).toFormat('y')
 
-export default function Home() {
+function Home() {
   const router = useRouter();
 
-  const { loading, error, data } = useQuery(GET_POSTS);
+  const { loading, error, data } = useQuery(
+    GET_POSTS,
+    { variables: { secret: localStorage.getItem('_password') } }
+  );
 
   const postsByDate = lodash.groupBy(data && data.posts, 'postId');
   
@@ -134,3 +138,7 @@ export default function Home() {
     </div>
   )
 }
+
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false
+});
