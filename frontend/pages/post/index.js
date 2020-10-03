@@ -13,8 +13,8 @@ import { Footer } from '../../components/layout/footer';
 import { CenterSpinner } from '../../components/spinner';
 
 const GET_POSTS = gql`
-  query {
-    posts {
+  query($secret: String!) {
+    posts(secret: $secret)  {
       id
       postId
       title
@@ -107,6 +107,10 @@ export default function Home() {
                       return postInYear && <Badge variant="primary">{postInYear.length}</Badge>
                     }
                     case 'year': {
+                      if (postInMonth) {
+                        console.log(postInDate, postInMonth, postInYear)
+                      }
+                      
                       return postInMonth && <Badge variant="primary">{postInMonth.length}</Badge>
                     }
                     case 'month': {

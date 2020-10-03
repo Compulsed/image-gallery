@@ -12,8 +12,8 @@ import { CenterSpinner } from '../../components/spinner';
 import { BlogMarkdown } from '../../components/blog-markdown';
 
 const GET_POST = gql`
-  query($postId: String!) {
-    post(postId: $postId) {
+  query($postId: String!, $secret: String!) {
+    post(postId: $postId, secret: $secret) {
       id
       postId
       title
@@ -53,9 +53,11 @@ const MyCarousel = ({ post }) => {
 } 
 
 function Post({ router }) {
+  const secret = localStorage.getItem('_password');
+
   const { loading, error, data } = useQuery(
     GET_POST,
-    { variables: { postId:  router.query.id } } // '2020-09-01' } }//  router.query.id } }
+    { variables: { postId:  router.query.id, secret } } 
   );
 
   const post = data && data.post;

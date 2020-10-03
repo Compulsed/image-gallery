@@ -29,8 +29,8 @@ const typeDefs = gql`
     type Query {
         hello: String!
 
-        post(postId: String!): Post
-        posts: [Post]
+        post(postId: String!, secret: String!): Post
+        posts(secret: String!): [Post]
 
         editorPost(postId: String!, secret: String!): Post
         editorPosts(secret: String!): [Post]

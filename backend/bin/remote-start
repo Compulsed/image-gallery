@@ -49,9 +49,15 @@ AWS_PAGER="" aws cloudformation deploy \
     --no-fail-on-empty-changeset
 echo "DONE: Create Bastion EC2 Key Stack"
 
-echo "START: wait stack-create-complete"
-aws cloudformation wait stack-create-complete --stack "$BASTION_EC2_KEY_STACK"
-echo "DONE: wait stack-create-complete"
+if [[ $(aws cloudformation describe-stacks --stack-name "$BASTION_EC2_KEY_STACK" --query "Stacks[0].StackStatus") == *"CREATE"* ]]; then
+    echo "START: wait stack-create-complete"
+    aws cloudformation wait stack-create-complete --stack "$BASTION_EC2_KEY_STACK"
+    echo "DONE: wait stack-create-complete"
+else
+    echo "START: wait stack-update-complete"
+    aws cloudformation wait stack-update-complete --stack "$BASTION_EC2_KEY_STACK"
+    echo "DONE: wait stack-update-complete"
+fi
 
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 #
@@ -67,10 +73,15 @@ AWS_PAGER="" aws cloudformation deploy \
     --no-fail-on-empty-changeset
 echo "DONE: Create Bastion Stack"
 
-echo "START: wait stack-create-complete"
-aws cloudformation wait stack-create-complete --stack "$BASTION_STACK"
-echo "DONE: wait stack-create-complete"
-
+if [[ $(aws cloudformation describe-stacks --stack-name "$BASTION_STACK" --query "Stacks[0].StackStatus") == *"CREATE"* ]]; then
+    echo "START: wait stack-create-complete"
+    aws cloudformation wait stack-create-complete --stack "$BASTION_STACK"
+    echo "DONE: wait stack-create-complete"
+else
+    echo "START: wait stack-update-complete"
+    aws cloudformation wait stack-update-complete --stack "$BASTION_STACK"
+    echo "DONE: wait stack-update-complete"
+fi
 
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 #
